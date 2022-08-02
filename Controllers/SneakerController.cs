@@ -1,49 +1,51 @@
 using Microsoft.AspNetCore.Mvc;
 using Sneaker_Shop_API.Dto;
 using Sneaker_Shop_API.Models;
-using Sneaker_Shop_API.Repositories;
+using Sneaker_Shop_API.Services;
 
 namespace Sneaker_Shop_API.Controllers;
 
-[ApiController]
-[Route("/sneakers")]
+[ApiController()]
+[Route("/api/v1/sneakers")]
 public class SneakerController : ControllerBase
 {
-    private readonly SneakerRepository _sneakerRepository;
+    private readonly SneakerService sneakerService;
 
-    public SneakerController(SneakerRepository sneakerRepository)
+    public SneakerController(SneakerService sneakerService)
     {
-        _sneakerRepository = sneakerRepository;
+        this.sneakerService = sneakerService;
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Sneaker>> GetSneakers()
+    public async Task<ActionResult<IEnumerable<Sneaker>>> GetSneakers()
     {
-        return Ok(_sneakerRepository.GetAll());
+        return Ok(await sneakerService.GetSneakers());
     }
 
     [HttpPost]
-    public ActionResult<Sneaker> CreateSneaker(CreateSneakerDto sneaker)
+    public async Task<ActionResult<Sneaker>> CreateSneaker(CreateSneakerDto sneakerDto)
     {
-        var newSneaKer = new Sneaker
-        {
-            Model = sneaker.Model,
-            Colors = sneaker.Colors,
-            Price = sneaker.Price,
-            InStock = sneaker.InStock
-        };
-        _sneakerRepository.Add(newSneaKer);
-        return CreatedAtAction(nameof(CreateSneaker), _sneakerRepository.Find(newSneaKer.Id));
+        var result = await sneakerService.CreateSneaker(sneakerDto);
+        return Created(nameof(CreateSneaker), result);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<Sneaker> GetOne(Guid id)
+    public async Task<ActionResult<Sneaker>> GetOne(int id)
     {
-        var sneaker = _sneakerRepository.Find(id);
-        if (sneaker == null)
-        {
-            return NotFound();
-        }
-        return Ok(sneaker);
+        return Ok(await sneakerService.GetSneaker(id));
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<Sneaker?>> UpdateSneaker(int id, UpdateSneakerDto updateSneakerDto)
+    {
+        var result = await sneakerService.UpdateSneaker(id, updateSneakerDto);
+        return result;
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> RemoveSneaker(int id)
+    {
+        await sneakerService.RemoveSneaker(id);
+        return Ok();
     }
 }
