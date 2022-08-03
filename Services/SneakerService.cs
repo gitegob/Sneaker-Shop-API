@@ -6,10 +6,10 @@ namespace Sneaker_Shop_API.Services;
 
 public class SneakerService
 {
-    private DataContext dataContext;
+    private DataContext _dataContext;
     public SneakerService(DataContext dataContext)
     {
-        this.dataContext = dataContext;
+        _dataContext = dataContext;
     }
 
     public async Task<Sneaker> CreateSneaker(CreateSneakerDto sneaker)
@@ -21,19 +21,19 @@ public class SneakerService
             Price = sneaker.Price,
             InStock = sneaker.InStock
         };
-        dataContext.Sneakers.Add(newSneaKer);
-        await dataContext.SaveChangesAsync();
+        _dataContext.Sneakers.Add(newSneaKer);
+        await _dataContext.SaveChangesAsync();
         return newSneaKer;
     }
 
     public async Task<List<Sneaker>> GetSneakers()
     {
-        return await dataContext.Sneakers.ToListAsync();
+        return await _dataContext.Sneakers.ToListAsync();
     }
 
     public async Task<Sneaker?> GetSneaker(int id)
     {
-        return await dataContext.Sneakers.FindAsync(id);
+        return await _dataContext.Sneakers.FindAsync(id);
     }
 
     public async Task<Sneaker?> UpdateSneaker(int id, UpdateSneakerDto sneakerDto)
@@ -44,7 +44,7 @@ public class SneakerService
         if (sneakerDto.Price != null) sneaker.Price = sneakerDto.Price;
         if (sneakerDto.Colors != null) sneaker.Colors = sneakerDto.Colors;
         if (sneakerDto.InStock != null) sneaker.InStock = sneakerDto.InStock;
-        await dataContext.SaveChangesAsync();
+        await _dataContext.SaveChangesAsync();
         return sneaker;
     }
 
@@ -53,8 +53,8 @@ public class SneakerService
         var sneaker = await GetSneaker(id);
         if (sneaker != null)
         {
-            dataContext.Sneakers.Remove(sneaker);
-            await dataContext.SaveChangesAsync();
+            _dataContext.Sneakers.Remove(sneaker);
+            await _dataContext.SaveChangesAsync();
 
         }
     }
