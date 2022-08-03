@@ -5,6 +5,7 @@ using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Sneaker_Shop_API.Dto;
+using Sneaker_Shop_API.Enums;
 using Sneaker_Shop_API.Models;
 
 namespace Sneaker_Shop_API.Services;
@@ -29,9 +30,9 @@ public class AuthService
             Email = userRegisterDto.Email,
             Password = BCrypt.Net.BCrypt.HashPassword(userRegisterDto.Password),
             Phone = userRegisterDto.Phone,
-            Address = userRegisterDto.Address
+            Address = userRegisterDto.Address,
+            Role = userRegisterDto.Role
         };
-        Console.WriteLine(newUser.Password);
         dataContext.Users.Add(newUser);
         await dataContext.SaveChangesAsync();
         return newUser;
@@ -51,8 +52,9 @@ public class AuthService
     {
         var claims = new List<Claim>
         {
+            new Claim("id",user.Id.ToString()),
             new Claim("email",user.Email),
-            new Claim("id",user.Id.ToString())
+            new Claim(ClaimTypes.Role, user.Role ?? "CLIENT" )
         };
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("Hellocomplicatedkey"));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);

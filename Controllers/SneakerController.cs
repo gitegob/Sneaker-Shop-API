@@ -1,12 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Extensions;
 using Sneaker_Shop_API.Dto;
+using Sneaker_Shop_API.Enums;
 using Sneaker_Shop_API.Models;
 using Sneaker_Shop_API.Services;
 
 namespace Sneaker_Shop_API.Controllers;
 
-[ApiController()]
+[ApiController]
 [Route("/api/v1/sneakers")]
+[Authorize(Roles = "CLIENT")]
 public class SneakerController : ControllerBase
 {
     private readonly SneakerService sneakerService;
