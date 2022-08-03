@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Sneaker_Shop_API.Enums;
 
 namespace Sneaker_Shop_API.Dto;
 
@@ -16,4 +17,6 @@ public class UserRegisterDto
     public string Phone { get; set; } = string.Empty;
     [Required]
     public string Address { get; set; } = string.Empty;
+    [Required]
+    public string Role { get; set; } = string.Empty;
 }
