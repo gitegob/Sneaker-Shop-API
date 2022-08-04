@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Sneaker_Shop_API.Settings;
 
 namespace Sneaker_Shop_API.Controllers;
 
@@ -12,14 +14,16 @@ public class MainController : ControllerBase
     };
 
     private readonly ILogger<MainController> _logger;
+    private readonly AppSettings _appSettings;
 
-    public MainController(ILogger<MainController> logger)
+    public MainController(ILogger<MainController> logger, IOptions<AppSettings> appSettings)
     {
         _logger = logger;
+        _appSettings = appSettings.Value;
     }
 
     [HttpGet(Name = "hello")]
-    public ActionResult<String> Get()
+    public ActionResult<string> Get()
     {
         return "Hello";
     }

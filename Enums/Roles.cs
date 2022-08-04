@@ -1,6 +1,6 @@
 namespace Sneaker_Shop_API.Enums;
-public enum ERoles
+public class Roles
 {
-    ADMIN,
-    CLIENT
+    public static readonly string Admin = "Admin";
+    public static readonly string Client = "Client";
 }
