@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Sneaker_Shop_API.Exceptions;
 using Sneaker_Shop_API.Settings;
 
 namespace Sneaker_Shop_API.Controllers;
@@ -25,6 +26,7 @@ public class MainController : ControllerBase
     [HttpGet(Name = "hello")]
     public ActionResult<string> Get()
     {
+        throw new HttpException(404);
         return "Hello";
     }
 }

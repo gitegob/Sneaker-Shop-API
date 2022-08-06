@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Sneaker_Shop_API.Dto;
+using Sneaker_Shop_API.Exceptions;
 using Sneaker_Shop_API.Models;
 
 namespace Sneaker_Shop_API.Services;
@@ -33,7 +34,9 @@ public class SneakerService
 
     public async Task<Sneaker?> GetSneaker(int id)
     {
-        return await _dataContext.Sneakers.FindAsync(id);
+        var sneaker = await _dataContext.Sneakers.FindAsync(id);
+        if (sneaker == null) throw new NotFoundException("Sneaker not found");
+        return sneaker;
     }
 
     public async Task<Sneaker?> UpdateSneaker(int id, UpdateSneakerDto sneakerDto)

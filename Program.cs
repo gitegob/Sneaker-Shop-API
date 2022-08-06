@@ -7,9 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sneaker_Shop_API.Authorization;
+using Sneaker_Shop_API.Middleware;
 using Sneaker_Shop_API.Services;
 using Sneaker_Shop_API.Settings;
 using Swashbuckle.AspNetCore.Filters;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +21,10 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // options.Filters.Add<HttpExceptionFilter>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -81,6 +86,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<LoggingMiddleware>();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.MapControllers();
 
