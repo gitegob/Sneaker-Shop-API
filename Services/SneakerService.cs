@@ -6,7 +6,7 @@ namespace Sneaker_Shop_API.Services;
 
 public class SneakerService
 {
-    private DataContext _dataContext;
+    private readonly DataContext _dataContext;
     public SneakerService(DataContext dataContext)
     {
         _dataContext = dataContext;

@@ -1,10 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+using Sneaker_Shop_API.Authorization;
 using Sneaker_Shop_API.Dto;
 using Sneaker_Shop_API.Models;
 using Sneaker_Shop_API.Settings;
@@ -14,12 +11,12 @@ namespace Sneaker_Shop_API.Services;
 public class AuthService
 {
     private readonly DataContext _dataContext;
-    private readonly AppSettings _appSettings;
+    private readonly JwtUtils _jwtUtils;
 
-    public AuthService(DataContext dataContext,IOptions<AppSettings> appSettings)
+    public AuthService(DataContext dataContext,JwtUtils jwtUtils)
     {
         _dataContext = dataContext;
-        _appSettings = appSettings.Value;
+        _jwtUtils = jwtUtils;
     }
 
     public async Task<User> Register(UserRegisterDto userRegisterDto)
@@ -47,23 +44,13 @@ public class AuthService
         if (foundUser == null) throw new BadHttpRequestException("Invalid Credentials", ((int)HttpStatusCode.BadRequest));
         var isValidPassword = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, foundUser.Password);
         if (!isValidPassword) throw new BadHttpRequestException("Invalid credentials", ((int)HttpStatusCode.BadRequest));
-        var jwtToken = CreateToken(foundUser);
+        var jwtToken = _jwtUtils.GenerateToken(foundUser);
         return jwtToken;
     }
 
-    private string CreateToken(User user)
+    public async Task<User?> GetByEmail(string email)
     {
-        var claims = new List<Claim>
-        {
-            new("id",user.Id.ToString()),
-            new("email",user.Email),
-            new(ClaimTypes.Role, user.Role ?? "CLIENT" )
-        };
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Jwt.Secret));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        var token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(1), signingCredentials: creds);
-        var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
-        return jwtToken;
+        return await _dataContext.Users.FirstOrDefaultAsync(user => user.Email.Equals(email));
     }
 
 }

@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sneaker_Shop_API.Models;
 

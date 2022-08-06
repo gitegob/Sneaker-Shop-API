@@ -14,5 +14,5 @@ public class ConnectionStrings
 
 public record Jwt
 {
-    public string? Secret { get; init; }
+    public string? Key { get; init; }
 };
