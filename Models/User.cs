@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Sneaker_Shop_API.Enums;
 
 namespace Sneaker_Shop_API.Models;
 

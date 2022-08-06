@@ -1,9 +1,12 @@
+global using System;
+global using System.Text;
 global using Sneaker_Shop_API.Data;
-using System.Text;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Sneaker_Shop_API.Authorization;
 using Sneaker_Shop_API.Services;
 using Sneaker_Shop_API.Settings;
 using Swashbuckle.AspNetCore.Filters;
@@ -37,13 +40,29 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey =
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Secret").Value)),
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Value)),
             ValidateIssuer = false,
             ValidateAudience = false
+        };
+        options.Events = new JwtBearerEvents()
+        {
+            OnTokenValidated = async context =>
+            {
+                //get userid if type is "userid"
+                var email = context.Principal.Claims.Where(x => x.Type == ClaimTypes.Email).FirstOrDefault().Value;
+                var authService = context.HttpContext.RequestServices.GetRequiredService<AuthService>();
+                var existingUser = await authService.GetByEmail(email);
+                if (existingUser == null )
+                {
+                    context.Fail("invaild token");
+                }
+            },
+
         };
     });
 
 // Add Custom services
+builder.Services.AddScoped<JwtUtils>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<SneakerService>();
 
