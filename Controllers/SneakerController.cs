@@ -19,35 +19,38 @@ public class SneakerController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Sneaker>>> GetSneakers()
+    public async Task<ActionResult<ApiResponse<Page<ViewSneakerDto>>>> GetSneakers(
+        [FromQuery] PaginationParams paginationParams)
     {
-        return Ok(await _sneakerService.GetSneakers());
+        var result = await _sneakerService.GetSneakers(paginationParams);
+        return Ok(new ApiResponse("Sneakers retrieved",result));
     }
 
     [HttpPost]
-    public async Task<ActionResult<Sneaker>> CreateSneaker(CreateSneakerDto sneakerDto)
+    public async Task<ActionResult<ApiResponse<Sneaker>>> CreateSneaker(CreateSneakerDto sneakerDto)
     {
         var result = await _sneakerService.CreateSneaker(sneakerDto);
-        return Created(nameof(CreateSneaker), result);
+        return Created(nameof(CreateSneaker), new ApiResponse("Sneaker retrieved",result));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Sneaker>> GetOne(int id)
+    public async Task<ActionResult<ApiResponse<Sneaker?>>> GetOne(int id)
     {
-        return Ok(await _sneakerService.GetSneaker(id));
+        var result = await _sneakerService.GetSneaker(id);
+        return Ok(new ApiResponse("Sneaker retrieved",result));
     }
 
     [HttpPatch("{id}")]
-    public async Task<ActionResult<Sneaker?>> UpdateSneaker(int id, UpdateSneakerDto updateSneakerDto)
+    public async Task<ActionResult<ApiResponse<Sneaker?>>> UpdateSneaker(int id, UpdateSneakerDto updateSneakerDto)
     {
         var result = await _sneakerService.UpdateSneaker(id, updateSneakerDto);
-        return result;
+        return Ok(new ApiResponse("Sneaker retrieved",result));
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> RemoveSneaker(int id)
     {
         await _sneakerService.RemoveSneaker(id);
-        return Ok();
+        return Ok(new ApiResponse("Sneaker deleted"));
     }
 }

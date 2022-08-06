@@ -55,11 +55,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 //get userid if type is "userid"
                 var email = context.Principal.Claims.Where(x => x.Type == ClaimTypes.Email).FirstOrDefault().Value;
-                var authService = context.HttpContext.RequestServices.GetRequiredService<AuthService>();
-                var existingUser = await authService.GetByEmail(email);
+                var userService = context.HttpContext.RequestServices.GetRequiredService<UserService>();
+                var existingUser = await userService.GetByEmail(email);
                 if (existingUser == null )
                 {
-                    context.Fail("invaild token");
+                    context.Fail("Invalid token");
                 }
             },
 
@@ -70,6 +70,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<JwtUtils>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<SneakerService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
