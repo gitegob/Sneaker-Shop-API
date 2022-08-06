@@ -15,3 +15,9 @@ public record UpdateSneakerDto(
     double? Price,
     bool? InStock
 );
+
+public record ViewSneakerDto(
+    int Id,
+    string? Model,
+    double? Price
+);

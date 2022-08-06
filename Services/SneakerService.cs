@@ -7,10 +7,11 @@ namespace Sneaker_Shop_API.Services;
 
 public class SneakerService
 {
-    private readonly DataContext _dataContext;
+    private readonly DataContext _db;
+
     public SneakerService(DataContext dataContext)
     {
-        _dataContext = dataContext;
+        _db = dataContext;
     }
 
     public async Task<Sneaker> CreateSneaker(CreateSneakerDto sneaker)
@@ -22,19 +23,25 @@ public class SneakerService
             Price = sneaker.Price,
             InStock = sneaker.InStock
         };
-        _dataContext.Sneakers.Add(newSneaKer);
-        await _dataContext.SaveChangesAsync();
+        _db.Sneakers.Add(newSneaKer);
+        await _db.SaveChangesAsync();
         return newSneaKer;
     }
 
-    public async Task<List<Sneaker>> GetSneakers()
+    public async Task<Page<ViewSneakerDto>> GetSneakers(PaginationParams paginationParams)
     {
-        return await _dataContext.Sneakers.ToListAsync();
+        var filteredSet = _db.Sneakers.Where(s=>s.Id!=null);
+        var sneakers = filteredSet
+            .Skip(paginationParams.Size * paginationParams.Page)
+            .Take(paginationParams.Size)
+            .Select(s => new ViewSneakerDto(s.Id, s.Model, s.Price));
+        return new Page<ViewSneakerDto>(await sneakers.ToListAsync(), paginationParams.Page, paginationParams.Size,
+            filteredSet.Count(), sneakers.Count());
     }
 
     public async Task<Sneaker?> GetSneaker(int id)
     {
-        var sneaker = await _dataContext.Sneakers.FindAsync(id);
+        var sneaker = await _db.Sneakers.FindAsync(id);
         if (sneaker == null) throw new NotFoundException("Sneaker not found");
         return sneaker;
     }
@@ -47,7 +54,7 @@ public class SneakerService
         if (sneakerDto.Price != null) sneaker.Price = sneakerDto.Price;
         if (sneakerDto.Colors != null) sneaker.Colors = sneakerDto.Colors;
         if (sneakerDto.InStock != null) sneaker.InStock = sneakerDto.InStock;
-        await _dataContext.SaveChangesAsync();
+        await _db.SaveChangesAsync();
         return sneaker;
     }
 
@@ -56,9 +63,8 @@ public class SneakerService
         var sneaker = await GetSneaker(id);
         if (sneaker != null)
         {
-            _dataContext.Sneakers.Remove(sneaker);
-            await _dataContext.SaveChangesAsync();
-
+            _db.Sneakers.Remove(sneaker);
+            await _db.SaveChangesAsync();
         }
     }
 }

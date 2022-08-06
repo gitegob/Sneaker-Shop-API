@@ -14,17 +14,17 @@ public class AuthController : ControllerBase
     {
         _authService = authService;
     }
-    [HttpPost("register")]
-    public async Task<ActionResult<User>> Register(UserRegisterDto userRegisterDto)
+    [HttpPost("signup")]
+    public async Task<ActionResult<ApiResponse<User>>> Register(UserSignupDto userSignupDto)
     {
-        var result = await _authService.Register(userRegisterDto);
-        return Created(nameof(Register),new ApiResponse<User>("Signup successful", result));
+        var result = await _authService.Signup(userSignupDto);
+        return Created(nameof(Register),new ApiResponse("Signup successful", result));
     }
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(UserLoginDto userLoginDto)
+    public async Task<ActionResult<ApiResponse<string>>> Login(UserLoginDto userLoginDto)
     {
         var result = await _authService.Login(userLoginDto);
-        var res = new ApiResponse<string>("Login successful", result);
-        return Ok(res);
+        return Ok(new ApiResponse("Login successful", result));
     }
+    
 }

@@ -14,10 +14,10 @@ public class LoggingMiddleware
     public async Task Invoke(HttpContext context)
     {
         var startTime = DateTime.Now;
-        _logger.LogInformation($"==============Starting Request ({context.Request.Method} {context.Request.Path}) at {startTime}=============");
+        _logger.LogInformation($"============== Starting Request ({context.Request.Method} {context.Request.Path}) at {startTime} ==============");
         await _next(context);
         var endTime = DateTime.Now;
         var duration = endTime  - startTime;
-        _logger.LogInformation($"==============End Request ({context.Request.Method} {context.Request.Path}) at {endTime} in {duration.Milliseconds} ms===========");
+        _logger.LogInformation($"============== End Request ({context.Request.Method} {context.Request.Path}) at {endTime} in {duration.Milliseconds} ms ==============");
     }
 }
