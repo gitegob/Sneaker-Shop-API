@@ -7,7 +7,7 @@ public record UserRegisterDto(
     [Required] string LastName,
     [Required, EmailAddress] string Email,
     [Required] string Password,
-    [Required] string Phone,
+    [Required, Phone] string Phone,
     [Required] string Address,
     [Required] string Role
 );

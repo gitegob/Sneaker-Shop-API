@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Sneaker_Shop_API.Authorization;
 using Sneaker_Shop_API.Dto;
+using Sneaker_Shop_API.Exceptions;
 using Sneaker_Shop_API.Models;
 using Sneaker_Shop_API.Settings;
 
@@ -22,7 +23,7 @@ public class AuthService
     public async Task<User> Register(UserRegisterDto userRegisterDto)
     {
         var foundUser = await _dataContext.Users.FirstOrDefaultAsync(user => user.Email == userRegisterDto.Email);
-        if (foundUser != null) throw new BadHttpRequestException("User already exists", ((int)HttpStatusCode.Conflict));
+        if (foundUser != null) throw new ConflictException("User already exists");
         var newUser = new User
         {
             FirstName = userRegisterDto.FirstName,
@@ -41,9 +42,9 @@ public class AuthService
     public async Task<string> Login(UserLoginDto userLoginDto)
     {
         var foundUser = await _dataContext.Users.FirstOrDefaultAsync(user => user.Email == userLoginDto.Email);
-        if (foundUser == null) throw new BadHttpRequestException("Invalid Credentials", ((int)HttpStatusCode.BadRequest));
+        if (foundUser == null) throw new BadRequestException("Invalid Credentials");
         var isValidPassword = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, foundUser.Password);
-        if (!isValidPassword) throw new BadHttpRequestException("Invalid credentials", ((int)HttpStatusCode.BadRequest));
+        if (!isValidPassword) throw new BadRequestException("Invalid credentials");
         var jwtToken = _jwtUtils.GenerateToken(foundUser);
         return jwtToken;
     }

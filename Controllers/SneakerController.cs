@@ -8,7 +8,7 @@ namespace Sneaker_Shop_API.Controllers;
 
 [ApiController]
 [Route("/api/v1/sneakers")]
-[Authorize(Roles = "CLIENT")]
+[Authorize]
 public class SneakerController : ControllerBase
 {
     private readonly SneakerService _sneakerService;

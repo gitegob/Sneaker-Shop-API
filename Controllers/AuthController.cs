@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Sneaker_Shop_API.Dto;
+using Sneaker_Shop_API.Models;
 using Sneaker_Shop_API.Services;
 
 namespace Sneaker_Shop_API.Controllers;
@@ -14,15 +15,16 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
     [HttpPost("register")]
-    public async Task<ActionResult<string>> Register(UserRegisterDto userRegisterDto)
+    public async Task<ActionResult<User>> Register(UserRegisterDto userRegisterDto)
     {
         var result = await _authService.Register(userRegisterDto);
-        return Created(nameof(Register), result);
+        return Created(nameof(Register),new ApiResponse<User>("Signup successful", result));
     }
     [HttpPost("login")]
     public async Task<ActionResult<string>> Login(UserLoginDto userLoginDto)
     {
         var result = await _authService.Login(userLoginDto);
-        return Ok(result);
+        var res = new ApiResponse<string>("Login successful", result);
+        return Ok(res);
     }
 }
