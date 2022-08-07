@@ -12,8 +12,8 @@ using Sneaker_Shop_API.Data;
 namespace Sneaker_Shop_API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220803094527_AddPassword")]
-    partial class AddPassword
+    [Migration("20220807203451_CreateTables")]
+    partial class CreateTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -76,6 +76,10 @@ namespace Sneaker_Shop_API.Migrations
 
                     b.Property<string>("Phone")
                         .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 

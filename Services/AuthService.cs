@@ -1,5 +1,6 @@
 using Sneaker_Shop_API.Authorization;
 using Sneaker_Shop_API.Dto;
+using Sneaker_Shop_API.Enums;
 using Sneaker_Shop_API.Exceptions;
 using Sneaker_Shop_API.Models;
 
@@ -7,13 +8,11 @@ namespace Sneaker_Shop_API.Services;
 
 public class AuthService
 {
-    private readonly DataContext _dataContext;
     private readonly JwtUtils _jwtUtils;
     private readonly UserService _userService;
 
-    public AuthService(DataContext dataContext, JwtUtils jwtUtils, UserService userService)
+    public AuthService(JwtUtils jwtUtils, UserService userService)
     {
-        _dataContext = dataContext;
         _jwtUtils = jwtUtils;
         _userService = userService;
     }
@@ -22,7 +21,7 @@ public class AuthService
     {
         var (firstName, lastName, email, password, phone, address) = userSignupDto;
         return await _userService.RegisterUser(new CreateUserDto(firstName, lastName, email, password, phone, address,
-            "CLIENT"));
+            ERoles.CLIENT));
     }
 
     public async Task<string> Login(UserLoginDto userLoginDto)
@@ -34,5 +33,4 @@ public class AuthService
         var jwtToken = _jwtUtils.GenerateToken(foundUser);
         return jwtToken;
     }
-
 }

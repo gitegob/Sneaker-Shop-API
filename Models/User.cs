@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Sneaker_Shop_API.Enums;
 
 namespace Sneaker_Shop_API.Models;
 
@@ -13,5 +15,8 @@ public class User : BaseEntity
     public string Password { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public string? Address { get; set; } = string.Empty;
-    public string Role { get; set; } = "CLIENT";
+    
+    [EnumDataType(typeof(ERoles))]
+    [Column(TypeName = "varchar(255)")]
+    public ERoles Role { get; set; } = ERoles.CLIENT;
 }
