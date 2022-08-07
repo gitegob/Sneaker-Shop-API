@@ -1,11 +1,7 @@
-using System.Net;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Sneaker_Shop_API.Authorization;
 using Sneaker_Shop_API.Dto;
 using Sneaker_Shop_API.Exceptions;
 using Sneaker_Shop_API.Models;
-using Sneaker_Shop_API.Settings;
 
 namespace Sneaker_Shop_API.Services;
 
@@ -15,15 +11,16 @@ public class AuthService
     private readonly JwtUtils _jwtUtils;
     private readonly UserService _userService;
 
-    public AuthService(DataContext dataContext,JwtUtils jwtUtils,UserService userService)
+    public AuthService(DataContext dataContext, JwtUtils jwtUtils, UserService userService)
     {
         _dataContext = dataContext;
         _jwtUtils = jwtUtils;
+        _userService = userService;
     }
 
     public async Task<User> Signup(UserSignupDto userSignupDto)
     {
-        var (firstName,lastName, email,password,phone,address) = userSignupDto;
+        var (firstName, lastName, email, password, phone, address) = userSignupDto;
         return await _userService.RegisterUser(new CreateUserDto(firstName, lastName, email, password, phone, address,
             "CLIENT"));
     }
