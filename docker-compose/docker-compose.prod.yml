@@ -3,7 +3,7 @@ services:
   sneakershopapi:
     image: sneakershopapi:latest
     build:
-      context: .
+      context: ../.
       dockerfile: ../Dockerfile
     ports:
       - 5050:5050
