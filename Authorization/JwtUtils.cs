@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Extensions;
 using Sneaker_Shop_API.Models;
 using Sneaker_Shop_API.Settings;
 
@@ -22,7 +23,7 @@ public class JwtUtils
         {
             new Claim("id", user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.Role, user.Role.GetDisplayName())
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Jwt.Key));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);

@@ -2,6 +2,7 @@ global using System;
 global using System.Text;
 global using Sneaker_Shop_API.Data;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,9 +22,10 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
 });
-builder.Services.AddControllers(options =>
+builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    // options.Filters.Add<HttpExceptionFilter>();
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
