@@ -2,13 +2,13 @@ namespace Sneaker_Shop_API.Dto;
 
 public class Page<T>
 {
-    public Page(IEnumerable<T> content, int page, int size, int totalCount, int currentCount)
+    public Page(ICollection<T> content, int page, int size, int totalCount)
     {
         Content = content;
         CurrentPage = page;
         ItemsPerPage = size;
         TotalItems = totalCount;
-        ItemsCount = currentCount;
+        ItemsCount = content.Count;
         TotalPages = (int)Math.Ceiling(totalCount / (decimal)size);
     }
 
