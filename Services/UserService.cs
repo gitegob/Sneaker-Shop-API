@@ -36,12 +36,12 @@ public class UserService
     public async Task<Page<ViewUserDto>> GetUsers(PaginationParams paginationParams)
     {
         var filteredSet = _db.Users.Where(s=>s.Id!=null);
-        var users = filteredSet
+        var users = await filteredSet
             .Skip(paginationParams.Size * paginationParams.Page)
             .Take(paginationParams.Size)
-            .Select(s => new ViewUserDto(s.Id, s.FirstName,s.LastName,s.Email, s.Role));
-        return new Page<ViewUserDto>(await users.ToListAsync(), paginationParams.Page, paginationParams.Size,
-            filteredSet.Count(), users.Count());
+            .Select(s => new ViewUserDto(s.Id, s.FirstName, s.LastName, s.Email, s.Role)).ToListAsync();
+        return new Page<ViewUserDto>(users, paginationParams.Page, paginationParams.Size,
+            filteredSet.Count());
     }
 
     public async Task<User?> GetByEmail(string email)

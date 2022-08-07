@@ -31,12 +31,13 @@ public class SneakerService
     public async Task<Page<ViewSneakerDto>> GetSneakers(PaginationParams paginationParams)
     {
         var filteredSet = _db.Sneakers.Where(s=>s.Id!=null);
-        var sneakers = filteredSet
+        var sneakers = await filteredSet
             .Skip(paginationParams.Size * paginationParams.Page)
             .Take(paginationParams.Size)
-            .Select(s => new ViewSneakerDto(s.Id, s.Model, s.Price));
-        return new Page<ViewSneakerDto>(await sneakers.ToListAsync(), paginationParams.Page, paginationParams.Size,
-            filteredSet.Count(), sneakers.Count());
+            .Select(s => new ViewSneakerDto(s.Id, s.Model, s.Price))
+            .ToListAsync();
+        return new Page<ViewSneakerDto>(sneakers, paginationParams.Page, paginationParams.Size,
+            filteredSet.Count());
     }
 
     public async Task<Sneaker?> GetSneaker(int id)

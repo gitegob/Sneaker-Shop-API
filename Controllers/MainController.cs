@@ -26,7 +26,7 @@ public class MainController : ControllerBase
     [HttpGet(Name = "hello")]
     public ActionResult<string> Get()
     {
-        throw new HttpException(404);
+        throw new NotFoundException();
         return "Hello";
     }
 }
