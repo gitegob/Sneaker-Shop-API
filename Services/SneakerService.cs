@@ -1,21 +1,24 @@
 using Microsoft.EntityFrameworkCore;
+using Sneaker_Shop_API.Authorization;
 using Sneaker_Shop_API.Dto;
 using Sneaker_Shop_API.Exceptions;
 using Sneaker_Shop_API.Models;
+using Sneaker_Shop_API.Utils;
 
 namespace Sneaker_Shop_API.Services;
 
 public class SneakerService
 {
-    private readonly DataContext _db;
+    private readonly DatabaseContext _db;
 
-    public SneakerService(DataContext dataContext)
+    public SneakerService(DatabaseContext dataContext)
     {
         _db = dataContext;
     }
 
     public async Task<Sneaker> CreateSneaker(CreateSneakerDto sneaker)
     {
+        var userId = int.Parse(CurrentUser.Get("id"));
         var newSneaKer = new Sneaker
         {
             Model = sneaker.Model,
@@ -30,26 +33,22 @@ public class SneakerService
 
     public async Task<Page<ViewSneakerDto>> GetSneakers(PaginationParams paginationParams)
     {
-        var filteredSet = _db.Sneakers.Where(s=>s.Id!=null);
-        var sneakers = await filteredSet
-            .Skip(paginationParams.Size * paginationParams.Page)
-            .Take(paginationParams.Size)
-            .Select(s => new ViewSneakerDto(s.Id, s.Model, s.Price))
-            .ToListAsync();
-        return new Page<ViewSneakerDto>(sneakers, paginationParams.Page, paginationParams.Size,
-            filteredSet.Count());
+        var query = _db.Sneakers.Where(s => !s.IsDeleted).OrderByDescending(s => s.CreatedAt)
+            .Select(s => new ViewSneakerDto(s.Id, s.Model, s.Price));
+        var result = await PaginationUtil.Paginate(query, paginationParams.Page, paginationParams.Size);
+        return result;
     }
 
-    public async Task<Sneaker?> GetSneaker(int id)
+    public async Task<ViewSneakerDto?> GetSneaker(int id)
     {
-        var sneaker = await _db.Sneakers.FindAsync(id);
+        var sneaker = await GetOne(id);
         if (sneaker == null) throw new NotFoundException("Sneaker not found");
-        return sneaker;
+        return new ViewSneakerDto(sneaker.Id,sneaker.Model,sneaker.Price);
     }
 
     public async Task<Sneaker?> UpdateSneaker(int id, UpdateSneakerDto sneakerDto)
     {
-        var sneaker = await GetSneaker(id);
+        var sneaker = await GetOne(id);
         if (sneaker == null) return null;
         if (sneakerDto.Model != null) sneaker.Model = sneakerDto.Model;
         if (sneakerDto.Price != null) sneaker.Price = sneakerDto.Price;
@@ -61,11 +60,18 @@ public class SneakerService
 
     public async Task RemoveSneaker(int id)
     {
-        var sneaker = await GetSneaker(id);
+        var sneaker = await GetOne(id);
         if (sneaker != null)
         {
             _db.Sneakers.Remove(sneaker);
             await _db.SaveChangesAsync();
         }
+    }
+    
+    public async Task<Sneaker?> GetOne(int id)
+    {
+        var product = await _db.Sneakers.FirstOrDefaultAsync(s => !s.IsDeleted && s.Id == id);
+        if (product == null) throw new NotFoundException("Sneaker not found");
+        return product;
     }
 }

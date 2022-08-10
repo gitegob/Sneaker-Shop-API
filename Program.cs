@@ -12,16 +12,19 @@ using Sneaker_Shop_API.Middleware;
 using Sneaker_Shop_API.Services;
 using Sneaker_Shop_API.Settings;
 using Swashbuckle.AspNetCore.Filters;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<AppSettings>(builder.Configuration);
-builder.Services.AddDbContext<DataContext>(options =>
+builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
 });
+builder.Services.AddTransient<DataSeeder>();
+
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -59,22 +62,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 var email = context.Principal.Claims.Where(x => x.Type == ClaimTypes.Email).FirstOrDefault().Value;
                 var userService = context.HttpContext.RequestServices.GetRequiredService<UserService>();
                 var existingUser = await userService.GetByEmail(email);
-                if (existingUser == null )
+                if (existingUser == null)
                 {
                     context.Fail("Invalid token");
                 }
             },
-
         };
     });
 
+builder.Services.AddHttpContextAccessor();
+
 // Add Custom services
-builder.Services.AddScoped<JwtUtils>();
+builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<SneakerService>();
 builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
+
+// Initialize the Database seeds or migrations
+DatabaseInitializer.Initialize(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -84,6 +91,7 @@ if (app.Environment.IsDevelopment())
     {
         options.DocumentTitle = "Sneaker Shop API";
         options.EnablePersistAuthorization();
+        options.DocExpansion(DocExpansion.None);
     });
 }
 

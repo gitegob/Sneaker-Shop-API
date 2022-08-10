@@ -452,6 +452,10 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+## Local files & Folders
 appsettings.Development.json
 appsettings.Staging.json
 appsettings.Production.json
+.env
+pgdata/
