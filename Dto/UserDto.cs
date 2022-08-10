@@ -10,7 +10,8 @@ public record CreateUserDto(
     [Required] string Password,
     [Required, Phone] string Phone,
     [Required] string Address,
-    [Required, EnumDataType(typeof(ERoles))] ERoles Role
+    [Required, EnumDataType(typeof(ERoles))]
+    ERoles Role
 );
 
 public record UserSignupDto(
@@ -21,6 +22,7 @@ public record UserSignupDto(
     [Required, Phone] string Phone,
     [Required] string Address
 );
+
 public record UserLoginDto(
     [Required, EmailAddress] string Email,
     [Required] string Password
@@ -32,4 +34,7 @@ public record ViewUserDto(
     string LastName,
     string Email,
     [EnumDataType(typeof(ERoles))] ERoles Role
-);
+)
+{
+    public string? FullName => $"{FirstName} {LastName}";
+}

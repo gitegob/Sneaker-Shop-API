@@ -1,9 +1,21 @@
-# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https prodeloper certificate for your ASP .NET Core service.
 services:
-  sneakershopapi:
-    image: sneakershopapi:latest
+  sneakershop-api-prod:
+    image: gbrian/sneakershop-api-prod:latest
     build:
       context: ../.
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
     ports:
       - 5050:5050
+    depends_on:
+      - sneakershop-psqldb-prod
+    restart: unless-stopped
+  
+  sneakershop-psqldb-prod:
+    image: postgres:14-alpine
+    container_name: sneakershop-psqldb-prod
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sneakershop_api
+    volumes:
+      - ../pgdata:/var/lib/postgresql/data

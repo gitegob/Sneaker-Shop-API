@@ -8,14 +8,11 @@ namespace Sneaker_Shop_API.Services;
 
 public class AuthService
 {
-    private readonly JwtUtils _jwtUtils;
+    private readonly JwtService _jwtService;
     private readonly UserService _userService;
 
-    public AuthService(JwtUtils jwtUtils, UserService userService)
-    {
-        _jwtUtils = jwtUtils;
-        _userService = userService;
-    }
+    public AuthService(JwtService jwtService, UserService userService) =>
+        (_jwtService, _userService) = (jwtService, userService);
 
     public async Task<User> Signup(UserSignupDto userSignupDto)
     {
@@ -30,7 +27,7 @@ public class AuthService
         if (foundUser == null) throw new BadRequestException("Invalid Credentials");
         var isValidPassword = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, foundUser.Password);
         if (!isValidPassword) throw new BadRequestException("Invalid credentials");
-        var jwtToken = _jwtUtils.GenerateToken(foundUser);
+        var jwtToken = _jwtService.GenerateToken(foundUser);
         return jwtToken;
     }
 }

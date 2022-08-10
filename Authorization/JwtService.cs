@@ -8,11 +8,11 @@ using Sneaker_Shop_API.Settings;
 
 namespace Sneaker_Shop_API.Authorization;
 
-public class JwtUtils
+public class JwtService
 {
     private readonly AppSettings _appSettings;
 
-    public JwtUtils(IOptions<AppSettings> appSettings)
+    public JwtService(IOptions<AppSettings> appSettings)
     {
         _appSettings = appSettings.Value;
     }
@@ -55,8 +55,8 @@ public class JwtUtils
             return new JwtPayload
             {
                 Id = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value),
-                Email = jwtToken.Claims.First(x => x.Type == "email").Value,
-                Role = jwtToken.Claims.First(x => x.Type == "role").Value
+                Email = jwtToken.Claims.First(x => x.Type == ClaimTypes.Email).Value,
+                Role = jwtToken.Claims.First(x => x.Type == ClaimTypes.Role).Value
             };
         }
         catch

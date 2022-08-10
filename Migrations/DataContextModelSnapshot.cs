@@ -10,7 +10,7 @@ using Sneaker_Shop_API.Data;
 
 namespace Sneaker_Shop_API.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(DatabaseContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

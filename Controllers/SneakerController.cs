@@ -13,10 +13,7 @@ public class SneakerController : ControllerBase
 {
     private readonly SneakerService _sneakerService;
 
-    public SneakerController(SneakerService sneakerService)
-    {
-        _sneakerService = sneakerService;
-    }
+    public SneakerController(SneakerService sneakerService) => (_sneakerService) = (sneakerService);
 
     [HttpGet]
     public async Task<ActionResult<ApiResponse<Page<ViewSneakerDto>>>> GetSneakers(
@@ -30,11 +27,11 @@ public class SneakerController : ControllerBase
     public async Task<ActionResult<ApiResponse<Sneaker>>> CreateSneaker(CreateSneakerDto sneakerDto)
     {
         var result = await _sneakerService.CreateSneaker(sneakerDto);
-        return Created(nameof(CreateSneaker), new ApiResponse("Sneaker retrieved",result));
+        return Created(nameof(CreateSneaker), new ApiResponse("Sneaker created",result));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<Sneaker?>>> GetOne(int id)
+    public async Task<ActionResult<ApiResponse<ViewSneakerDto?>>> GetSneaker(int id)
     {
         var result = await _sneakerService.GetSneaker(id);
         return Ok(new ApiResponse("Sneaker retrieved",result));

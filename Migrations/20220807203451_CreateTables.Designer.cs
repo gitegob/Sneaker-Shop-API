@@ -11,7 +11,7 @@ using Sneaker_Shop_API.Data;
 
 namespace Sneaker_Shop_API.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20220807203451_CreateTables")]
     partial class CreateTables
     {

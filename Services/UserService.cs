@@ -2,14 +2,15 @@ using Microsoft.EntityFrameworkCore;
 using Sneaker_Shop_API.Dto;
 using Sneaker_Shop_API.Exceptions;
 using Sneaker_Shop_API.Models;
+using Sneaker_Shop_API.Utils;
 
 namespace Sneaker_Shop_API.Services;
 
 public class UserService
 {
-    private readonly DataContext _db;
+    private readonly DatabaseContext _db;
 
-    public UserService(DataContext dataContext)
+    public UserService(DatabaseContext dataContext)
     {
         _db = dataContext;
     }
@@ -35,17 +36,14 @@ public class UserService
 
     public async Task<Page<ViewUserDto>> GetUsers(PaginationParams paginationParams)
     {
-        var filteredSet = _db.Users.Where(s=>s.Id!=null);
-        var users = await filteredSet
-            .Skip(paginationParams.Size * paginationParams.Page)
-            .Take(paginationParams.Size)
-            .Select(s => new ViewUserDto(s.Id, s.FirstName, s.LastName, s.Email, s.Role)).ToListAsync();
-        return new Page<ViewUserDto>(users, paginationParams.Page, paginationParams.Size,
-            filteredSet.Count());
+        var query = _db.Users.Where(s => !s.IsDeleted).OrderByDescending(s => s.CreatedAt)
+            .Select(u => new ViewUserDto(u.Id, u.FirstName, u.LastName,u.Email,u.Role));
+        var result = await PaginationUtil.Paginate(query, paginationParams.Page, paginationParams.Size);
+        return result;
     }
 
     public async Task<User?> GetByEmail(string email)
     {
-        return await _db.Users.FirstOrDefaultAsync(user => user.Email.Equals(email));
+        return await _db.Users.FirstOrDefaultAsync(user => !user.IsDeleted && user.Email.Equals(email));
     }
 }

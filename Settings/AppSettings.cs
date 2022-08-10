@@ -5,6 +5,7 @@ public class AppSettings
     public string? AllowedHosts { get; init; }
     public ConnectionStrings? ConnectionStrings { get; init; }
     public Jwt? Jwt { get; init; }
+    public string? DefaultPassword { get; init; }
 };
 
 public class ConnectionStrings
